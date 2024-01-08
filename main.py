@@ -2,13 +2,11 @@ from flask import Flask, jsonify
 import json
 import os
 
-
 app = Flask(__name__)
 
 with open('jokes.json', 'r', encoding='utf-8') as file:
     total = json.load(file)
-    
-    
+
 @app.route('/jokes/<int:amount>', methods=['GET'])
 def get_jokes(amount):
     if amount < 1:
@@ -19,7 +17,10 @@ def get_jokes(amount):
         return jsonify({"error": f"Only {e} jokes available."}), 400
 
     s = total[:amount]
-    return jsonify({"Sucessfully Generated": s})
+    response = {"Successfully Generated": s}
+
+    response_json = json.dumps(response, ensure_ascii=False).encode('utf8')
+    return response_json
 
 if __name__ == '__main__':
     port = os.environ.get("PORT", 5000)
