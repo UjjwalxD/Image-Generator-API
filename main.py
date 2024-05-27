@@ -1,27 +1,23 @@
-from flask import Flask, jsonify
-import json
-import os
+import json, random
+from flask import Flask, jsonify, request
+from PIL import Image 
 
 app = Flask(__name__)
 
-with open('jokes.json', 'r', encoding='utf-8') as file:
-    total = json.load(file)
+with open("images.json", "r") as f:
+    image_urls = json.load(f)
 
-@app.route('/jokes/<int:amount>', methods=['GET'])
-def get_jokes(amount):
-    if amount < 1:
-        return jsonify({"error": "Jokes amount should be in positive int."}), 400
+@app.route("/api/images/random", methods=["GET"])
+def get_random_image():
+    """Returns a random image URL from the JSON file."""
 
-    e = len(total)
-    if amount > e:
-        return jsonify({"error": f"Only {e} jokes available."}), 400
+    random_index = random.randint(0, len(image_urls) - 1)
+    random_image_url = image_urls[random_index]
+    return jsonify({"url": random_image_url})
 
-    s = total[:amount]
-    response = {"Successfully Generated": s}
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({"error": "Route not found"}), 404
 
-    response_json = json.dumps(response, ensure_ascii=False).encode('utf8')
-    return response_json
-
-if __name__ == '__main__':
-    port = os.environ.get("PORT", 5000)
-    app.run(debug=True, port=port)
+if __name__ == "__main__":
+    app.run(debug=True)
