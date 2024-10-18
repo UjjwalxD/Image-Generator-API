@@ -1,6 +1,5 @@
 import json, random
 from flask import Flask, jsonify, request
-from PIL import Image 
 
 app = Flask(__name__)
 
